@@ -1,12 +1,15 @@
 // The server port - the port to run Pokemon Showdown under
 exports.port = 8000;
+//exports.serverid = 'lequotidienpokemon'; // ça c'est sensé officialiser le serveur
+//exports.servertoken = '5mNkKrsTZcRl'; // c'est sensé officialiser l'IP mais c9 prend pas
 
 // proxyip - proxy IPs with trusted X-Forwarded-For headers
 //   This can be either false (meaning not to trust any proxies) or an array
 //   of strings. Each string should be either an IP address or a subnet given
 //   in CIDR notation. You should usually leave this as `false` unless you
 //   know what you are doing.
-exports.proxyip = false;
+//exports.proxyip = '10.240.213.116/24'
+exports.proxyip = false; 
 
 // Pokemon of the Day - put a pokemon's name here to make it Pokemon of the Day
 //   The PotD will always be in the #2 slot (not #1 so it won't be a lead)
@@ -41,14 +44,16 @@ exports.loginserverpublickey = "-----BEGIN RSA PUBLIC KEY-----\n" +
 	"-----END RSA PUBLIC KEY-----\n";
 
 // crashguardemail - if the server has been running for more than an hour
-//   and crashes, send an email using these settings, rather than locking down
-//   the server. Uncomment this definition if you want to use this feature;
-//   otherwise, all crashes will lock down the server.
+// and crashes, send an email using these settings, rather than locking down
+// the server. Uncomment this definition if you want to use this feature;
+// otherwise, all crashes will lock down the server.
 /**exports.crashguardemail = {
+	transport: 'SMTP',
 	options: {
 		host: 'mail.example.com',
 		port: 465,
-		secure: true,
+		secureConnection: true,
+		maxConnections: 1,
 		auth: {
 			user: 'example@domain.com',
 			pass: 'password'
@@ -62,27 +67,14 @@ exports.loginserverpublickey = "-----BEGIN RSA PUBLIC KEY-----\n" +
 // report joins and leaves - shows messages like "<USERNAME> joined"
 //   Join and leave messages are small and consolidated, so there will never
 //   be more than one line of messages.
-//   If this setting is set to `true`, it will override the client-side
-//   /hidejoins configuration for users.
 //   This feature can lag larger servers - turn this off if your server is
 //   getting more than 80 or so users.
 exports.reportjoins = true;
-
-// report joins and leaves periodically - sends silent join and leave messages in batches
-//   This setting will only be effective if `reportjoins` is set to false, and users will
-//   only be able to see the messages if they have the /showjoins client-side setting enabled.
-//   Set this to a positive amount of milliseconds if you want to enable this feature.
-exports.reportjoinsperiod = 0;
 
 // report battles - shows messages like "OU battle started" in the lobby
 //   This feature can lag larger servers - turn this off if your server is
 //   getting more than 160 or so users.
 exports.reportbattles = true;
-
-// report joins and leaves in battle - shows messages like "<USERNAME> joined" in battle
-//   Set this to false on large tournament servers where battles get a lot of joins and leaves.
-//   Note that the feature of turning this off is deprecated.
-exports.reportbattlejoins = true;
 
 // moderated chat - prevent unvoiced users from speaking
 //   This should only be enabled in special situations, such as temporarily
@@ -90,11 +82,6 @@ exports.reportbattlejoins = true;
 exports.chatmodchat = false;
 exports.battlemodchat = false;
 exports.pmmodchat = false;
-
-// forced timer - force the timer on for all battles
-//   Players will be unable to turn it off.
-//   This setting can also be turned on with the command /forcetimer.
-exports.forcetimer = false;
 
 // backdoor - allows Pokemon Showdown system operators to provide technical
 //            support for your server
@@ -106,17 +93,17 @@ exports.forcetimer = false;
 //   disable this feature.
 exports.backdoor = true;
 
-// List of IPs and user IDs with dev console (>> and >>>) access.
+// List of IPs from which the dev console (>> and >>>) can be used.
 // The console is incredibly powerful because it allows the execution of
 // arbitrary commands on the local computer (as the user running the
 // server). If an account with the console permission were compromised,
 // it could possibly be used to take over the server computer. As such,
-// you should only specify a small range of trusted IPs and users here,
-// or none at all. By default, only localhost can use the dev console.
+// you should only specify a small range of trusted IPs here, or none
+// at all. By default, only localhost can use the dev console.
 // In addition to connecting from a valid IP, a user must *also* have
 // the `console` permission in order to use the dev console.
 // Setting this to an empty array ([]) will disable the dev console.
-exports.consoleips = ['127.0.0.1'];
+exports.consoleips = ['paulgunaseelan', 'paullelcrio', 'pauldlelucario', 'fondateurlucario', 'dauphin076'];
 
 // Whether to watch the config file for changes. If this is enabled,
 // then the config.js file will be reloaded when it is changed.
@@ -125,10 +112,7 @@ exports.consoleips = ['127.0.0.1'];
 exports.watchconfig = true;
 
 // logchat - whether to log chat rooms.
-exports.logchat = false;
-
-// logchallenges - whether to log challenge battles. Useful for tournament servers.
-exports.logchallenges = false;
+exports.logchat = true;
 
 // loguserstats - how often (in milliseconds) to write user stats to the
 // lobby log. This has no effect if `logchat` is disabled.
@@ -145,6 +129,9 @@ exports.simulatorprocesses = 1;
 // from the `users` array. The default is 1 hour.
 exports.inactiveuserthreshold = 1000 * 60 * 60;
 
+// Set this to true if you are using Pokemon Showdown on Heroku.
+exports.herokuhack = false;
+
 // Custom avatars.
 // This allows you to specify custom avatar images for users on your server.
 // Place custom avatar files under the /config/avatars/ directory.
@@ -155,31 +142,125 @@ exports.inactiveuserthreshold = 1000 * 60 * 60;
 // displayed in the client.
 exports.customavatars = {
 	//'userid': 'customavatar.png'
+	/*
+	'ghostprince': 'ghostprince.png',
+	'magmasta': 'forza.png',
+	'azdar': 'azdar.png',
+	'pacificerza': 'erza3.png',//n'oublie pas de rajouter une virgule à chaque fois que tu rajoutes une ligne d'avatar
+	'myogui': 'myogui.png',
+	'chaglam': 'chaglam.png',
+	'paulgunaseelan': 'paul.gif',
+	'fondateurpaul': 'paul.gif',
+	'fondateurlucario': 'paul.gif',
+	'paullelucario': 'real lucario.jpg',
+	'paullelcrio': 'avatar lucario.png',
+	'lucariodu76': 'avatar lucario2.jpg',
+	'dauphin076': 'avatar lucario2.jpg',
+	'champion1lucario': 'badge paul2.png',
+	'wartek': 'wartek.png',
+	'lumasan': 'lumavatar2.png',
+	'robotdelqp': 'avatar robot.png',//la dernière ligne ne doit pas avoir de virgule au fait
+	'robotn2delqp': 'avatar robot.png',
+	'3dsbot': 'avatar robot.png',
+	'iwallyi': 'darkustom.gif',
+	//'draha022': 'draha.png',
+	'draha022': 'dragon.jpg',
+	'champion8draha': 'draha.png',
+	'panur': 'tusaispascoder.png',
+	//'mindnight': 'somalia.png',
+	'blazingdark': 'avatar bd.png',
+	'wcjay': 'suicunethebuttercat.gif',
+	'champion3jay': 'badge suicune.png',
+	'erzafk': 'aspiflex.png',
+	'claerina': 'ava clae.png',
+	//'skyrio': 'avatar skyrio2.png',
+	'skyrio': 'skyrio3.png',
+	'jessicca001': 'princesse lucario.jpg',
+	'situm': 'situm4.png',
+	'ytreza': 'ytreza.png',
+	'lordwettin': 'lordwettin.png',
+	'princewettin': 'lordwettin.png',
+	'blazinglight': 'avatar blazinglight.gif',
+	'situmparletmort': 'avatar situm2.png',
+	'yarti': 'yarti.png',
+	'wallyistopladder': 'wally5.png',
+	'trainerpkmnblue': 'avatar blue.png',
+	'portgasdjungko': 'avatar pdj3.gif',
+	'lucaq': 'lucaq.png',
+	'pauldprime': 'lucario pleure2.png',
+	'pauldlelucario': 'gif lucario1.gif',
+	'wallyladder': 'vive_erza.png',
+	'darkraipower99': 'avatar darkraipower.png',
+	'situmafk': 'avatar afk.png',
+	'posipi': 'posipi.gif',
+	'dracomastersitum': 'dmsitum.png',
+	'alicethebeauty': 'avatar alice.png',
+	'goldenike': 'avatar roxas.jpg',
+	'graydeglace': 'MagikarpGrassSteel-4.png',
+	'champion6gray': 'gray.jpeg',
+	'exiline': 'exilyse.png',
+	'jeanletardigrade': 'pacificerza.png',
+	'soulcooler': 'shawott.gif',
+	'wintercup': 'givrix2.png',
+	'givrix': 'tamere.png',
+	'moulefrites': 'stromae.jpg',
+	'swampertmshiney': 'laggron.gif',
+	'grosorteil': 'fuckgivrix.png',
+	'situmbdwallypholo': 'situmblabla.png',
+	'maxvictini8': 'victini.png',
+	'dark4ever': 'd4e.png',
+	'rocketleadererza': 'rocketleadererza.png',
+	'newdracofeusprod': 'newdracofeusprod.png',
+	'dracofeu2lamors': 'newdracofeusprod.png',
+	'thedarksitum': 'situmautre.png', 
+	//'wallythebully': 'wtb.png',
+	'wallythebully': 'wallytheouf.png',
+	'shmasu': 'cc.png',
+	'holiano': 'holiano.jpg',
+	'blazingdark': 'bd.jpg',
+	'rsbamafive': 'bama.png',
+	'xigcyp': 'sip.png',
+	'elodie': 'avatar elodie.png',
+	'3dserza': 'erza3.png',
+	'scorvol71': 's71.png',
+	'noruega': 'noruega.png',
+	'fairypeak': 'fp.png',
+	'suicuark': 'avatar suicuark.png',
+	'chipsoupokemon': 'avatar cp.png',
+	'ishikoo': 'avatar buizel.png',
+	'evil': 'avatar evil.jpeg',
+	'skelderex': 'avatar1.png',
+	'mokura': 'avatar mokura.png',
+	'coluche': 'coluche.png',
+	'champion7noruega': 'vivenesta.png',
+	'kaideos': 'kaideos2.png',
+	'miang': 'miang5.png',
+	'masterkaii': 'avatar kaideos.png',
+	'conseil4jay': 'avatar suicune.png',
+	'screamouts': 'torterra.png',
+	'linya': 'linya.gif',
+	'filliburn': 'avatar2.jpg',
+	'oxady': 'oxady.png',
+	'kaizerteemo': 'roxas.jpg',
+	'mindnight': 'mindnight.png',
+	'redmaxxx': 'redmax.png'
+	*/
 };
-
-// Tournament announcements
-// When tournaments are created in rooms listed below, they will be announced in
-// the server's main tournament room (either the specified tourroom or by default
-// the room 'tournaments')
-exports.tourroom = '';
-exports.tourannouncements = [/* roomids */];
 
 // appealurl - specify a URL containing information on how users can appeal
 // disciplinary actions on your section. You can also leave this blank, in
 // which case users won't be given any information on how to appeal.
-exports.appealurl = '';
+exports.appealurl = 'http://ask.fm/Paul_Lucario';
 
-// replsocketprefix - the prefix for the repl sockets to be listening on
-// replsocketmode - the file mode bits to use for the repl sockets
-exports.replsocketprefix = './logs/repl/';
-exports.replsocketmode = 0600;
+// autoRespActives - Si les réponses autos par le serveur
+// sont actives ou pas.
+exports.autoRespActives = true; 
 
 // permissions and groups:
-//   Each entry in `grouplist' is a seperate group. Some of the members are "special"
+//   Each entry in `groupsranking' specifies the ranking of the groups.
+//   Each entry in `groups' is a seperate group. Some of the members are "special"
 //     while the rest is just a normal permission.
-//   The order of the groups determines their ranking.
 //   The special members are as follows:
-//     - symbol: Specifies the symbol of the group (as shown in front of the username)
 //     - id: Specifies an id for the group.
 //     - name: Specifies the human-readable name for the group.
 //     - root: If this is true, the group can do anything.
@@ -192,8 +273,6 @@ exports.replsocketmode = 0600;
 //                       's' is a special group where it means the user itself only
 //                       and 'u' is another special group where it means all groups
 //                       lower in rank than the current group.
-//     - roomonly: forces the group to be a per-room moderation rank only.
-//     - globalonly: forces the group to be a global rank only.
 //   All the possible permissions are as follows:
 //     - console: Developer console (>>).
 //     - lockdown: /lockdown and /endlockdown commands.
@@ -201,16 +280,13 @@ exports.replsocketmode = 0600;
 //     - ignorelimits: Ignore limits such as chat message length.
 //     - promote: Promoting and demoting. Will only work if the target user's current
 //                  group and target group are both in jurisdiction.
-//     - room<rank>: /roompromote to <rank> (eg. roomvoice)
 //     - ban: Banning and unbanning.
 //     - mute: Muting and unmuting.
-//     - lock: locking (ipmute) and unlocking.
 //     - receivemutedpms: Receive PMs from muted users.
 //     - forcerename: /fr command.
 //     - redirect: /redir command.
 //     - ip: IP checking.
 //     - alts: Alt checking.
-//     - modlog: view the moderator logs.
 //     - broadcast: Broadcast informational commands.
 //     - declare: /declare command.
 //     - announce: /announce command.
@@ -218,19 +294,71 @@ exports.replsocketmode = 0600;
 //     - potd: Set PotD.
 //     - forcewin: /forcewin command.
 //     - battlemessage: /a command.
-//     - tournaments: creating tournaments (/tour new, settype etc.)
-//     - tournamentsmoderation: /tour dq, autodq, end etc.
-//     - tournamentsmanagement: enable/disable tournaments.
-exports.grouplist = [
-	{
-		symbol: '~',
+exports.groupsranking = [' ', '€', '+', '♫', '©', '%', '☆', '@', '\u2605', '#', '&','£', 'ℜ', '~', '®', '$'],
+exports.groups = {
+	'$': {
+		id: "fondateur",
+		name: "Fondateur",
+		root: true,
+		broadcast: true,
+		globalonly: true,
+		rank: 15
+    },
+    '®': {
+		id: "robot",
+		name: "Robot",
+		root: true,
+		broadcast: true,
+		globalonly: true,
+		rank: 14
+    },
+	'~': {
 		id: "admin",
 		name: "Administrator",
 		root: true,
-		globalonly: true
+		broadcast: true,
+		globalonly: true,
+		rank: 13
+    },
+    'ℜ': { 
+		id: "royal",
+        name: "Membre Royal",
+        inherit: '&',
+        jurisdiction: '&u',
+        promote: 'u',
+        forcewin: true,
+        declare: true,
+		gdeclare: true,
+		broadcast: true,
+        modchatall: true,
+        rangeban: true,
+        potd: true,
+        disableladder: true,
+        tournamentsmanagement: true,
+        rank: 12
 	},
-	{
-		symbol: '&',
+	'£': { 
+		id: "codeur",
+        name: "Codeur",
+        inherit: '&',
+        jurisdiction: '&u',
+        hotpatch: true,
+        promote: 'u',
+        forcewin: true,
+        roommod: true,
+        roomdriver: true,
+        declare: true,
+		gdeclare: true,
+        modchatall: true,
+        rangeban: true,
+        potd: true,
+        disableladder: true,
+        tournamentsmanagement: true,
+        broadcast: true,
+        console: true, // DONNE ACCES A LA CONSOLE DU SERVEUR AUX CODEURS
+        rank: 11
+	},
+	'&': {
 		id: "leader",
 		name: "Leader",
 		inherit: '@',
@@ -238,15 +366,17 @@ exports.grouplist = [
 		promote: 'u',
 		forcewin: true,
 		declare: true,
+		gdeclare: true,
+		broadcast: true,
 		modchatall: true,
 		rangeban: true,
 		potd: true,
 		disableladder: true,
 		globalonly: true,
-		tournamentsmanagement: true
+		tournamentsmanagement: true,
+		rank: 10
 	},
-	{
-		symbol: '#',
+	'#': {
 		id: "owner",
 		name: "Room Owner",
 		inherit: '@',
@@ -254,43 +384,63 @@ exports.grouplist = [
 		roommod: true,
 		roomdriver: true,
 		declare: true,
+		broadcast: true,
 		modchatall: true,
 		roomonly: true,
-		tournamentsmanagement: true
+		tournamentsmanagement: true,
+		rank: 9
 	},
-	{
-		symbol: '\u2605',
+	'\u2605': {
 		id: "player",
 		name: "Player",
 		inherit: '+',
 		roomvoice: true,
 		modchat: true,
+		broadcast: true,
 		roomonly: true,
 		privateroom: true,
-		joinbattle: true
+		rank: 8
 	},
-	{
-		symbol: '@',
+	'@': {
 		id: "mod",
 		name: "Moderator",
 		inherit: '%',
 		jurisdiction: 'u',
 		ban: true,
+		broadcast: true,
 		modchat: true,
+		warn: true,
+		mute: true,
 		roomvoice: true,
 		forcerename: true,
 		ip: true,
 		alts: '@u',
-		tournaments: true
+		tournaments: true,
+		rank: 7
 	},
-	{
-		symbol: '%',
+	'☆': {
+    	id: "maitre",
+    	name: "Maître",
+		inherit: '@',
+		jurisdiction: 'u',
+		ban: true,
+		modchat: true,
+		broadcast: true,
+		roomvoice: true,
+		forcerename: true,
+		ip: true,
+		alts: '@u',
+		tournaments: true,
+    	rank: 6
+	},
+	'%': {
 		id: "driver",
 		name: "Driver",
 		inherit: '+',
 		jurisdiction: 'u',
 		announce: true,
 		warn: true,
+		broadcast: true,
 		kick: true,
 		mute: true,
 		lock: true,
@@ -301,19 +451,57 @@ exports.grouplist = [
 		bypassblocks: 'u%@&~',
 		receiveauthmessages: true,
 		tournamentsmoderation: true,
-		jeopardy: true,
-		joinbattle: true
+		rank: 5
 	},
-	{
-		symbol: '+',
+	'©': {
+    	id: "c4",
+    	name: "Conseil 4",
+		inherit: '%',
+		jurisdiction: 'u',
+		announce: true,
+		warn: true,
+		kick: true,
+		mute: true,
+		broadcast: true,
+		lock: true,
+		forcerename: true,
+		timer: true,
+		modlog: true,
+		alts: '%u',
+		bypassblocks: 'u%@&~',
+		receiveauthmessages: true,
+		tournamentsmoderation: true,
+    	rank: 4
+	},
+	'♫': {
+		id: "anim",
+		name: "Animateur",
+		inherit: '+',
+		announce: true,
+		broadcast: true,
+		declare: true,
+		modchat: true,
+		rank: 3
+	},
+	'+': {
 		id: "voice",
 		name: "Voice",
 		inherit: ' ',
-		broadcast: true
+		broadcast: true,
+		joinbattle: true,
+		rank: 2
 	},
-	{
-		symbol: ' ',
+	'€': {
+    	id: "champion",
+    	name: "Champion",
+		inherit: '+',
+		broadcast: true,
+		joinbattle: true,
+    	rank: 1
+	},
+	' ': {
 		ip: 's',
-		alts: 's'
-	}
-];
+		alts: 's',
+		rank: 0
+	} 
+};
