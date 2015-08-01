@@ -417,6 +417,96 @@ var Context = exports.Context = (function () {
  *     if he's muted, will warn him that he's muted, and
  *     return false.
  */
+ 
+// autoresp
+// Réponses automatiques - Peut être désactivé via les configurations (config.js)
+// keywords = les mots clés qui vont lancer le script
+// phrases  = les phrases qui seront envoyées
+var autoresp = function(message, user, room) {
+	if ((user.locked || user.mutedRooms[room.id]) && !user.can('bypassall')) return false; 
+	if (room.modchat) return false;
+	var keywords = ['paul', 'Paul', 'LQP Paul', 'lqppaul', 'LQP paul', 'Paul Lucario Gunaseelan', 'Paul Lucario', 'Paul le Lucario', 'Paul Gunaseelan', 'Paul?', 'paul?', 'paul ?', 'Paul ?'];
+	if (keywords.indexOf(message) > -1) {
+		var phrases = [
+			"Paul ? C'est qui lui ? Ca ne me dit rien...",
+			"Tu veux sans doute dire 'Lucario' non ?",
+			"Mais arrêtez de l'appeler comme ça bordel ! Il déteste les humains alors pourquoi aimerait-il un nom humain ?",
+			"Lucario bon sang ! il s'appelle L-U-C-A-R-I-O !",
+			"Mais pourquoi vous insistez avec ce nom ? -_-",
+			"Inutile de l'appeler comme ça, il ne vous répondra pas.",
+			"Vous n'avez toujours pas compris que Paul n'existe plus ? Que Lucario a pris sa place ? Il serait peut-être temps de vous tenir au courant non ?",
+			"Combien de fois faudra-t-il vous dire qu'il ne veut plus de ce nom ? Appelez-le Lucario !",
+			"Dis moi, as-tu déjà vu un Lucario avec un nom humain ? Je veux dire, en vrai, pas en jeu ou autre... On est bien d'accord, alors arrêtez de l'appeler comme ça !"
+		],
+		resp = '|raw|[<font color="FF00FF">Serveur</font>] <b>'+ phrases[Math.floor((Math.random() * phrases.length))] + '</b>';
+		console.log('[Autoresp] Paul: '+ user +', '+ room);
+		setTimeout(function() {
+			room.send(resp);
+			room.update();	
+		}, 1);
+	}
+	
+	var keywords = ['hi', 'salut', 'bonjour', 'yo', 'slt', 'cc', 'coucou', 'lu', 'bonsoir', 'Salut', 'Bonjour', 'Bonsoir', 'Slt', 'wesh', 'Wesh', 'Salut!'];
+	if (keywords.indexOf(message) > -1) {
+		var phrases = [
+			'hi',
+			'Salut',
+			'Bienvenue parmi nous ' + user.name + ' !',
+			'yo',
+			'slt',
+			'Salut ' + user.name + ', n\'oublie pas de dire du bien du server pour cet accueil chaleureux.',
+			'Wesh',
+			'Bienvenue sur Le Quotidien Pokémon, ' + user.name + ' !'
+		],
+		resp = '|raw|[<font color="FF00FF">Serveur</font>] <b>'+ phrases[Math.floor((Math.random() * phrases.length))] + '</b>';
+		console.log('[Autoresp] Autoslt: '+ user +', '+ room);
+		setTimeout(function() {
+			room.send(resp);
+			room.update();	
+		}, 1);
+	}
+};	
+
+// getYoutubeUrl 
+// Renvoie le titre d'une vidéo postée 
+var getYoutubeUrl = function (message, user, room) {
+	if ((user.locked || user.mutedRooms[room.id]) && !user.can('bypassall')) return false;
+	var split = message.split(' ');
+	var id    = undefined; 
+		
+	for(var i in split) {
+		id = split[i].split("=")[1];
+		if (!id) return false;
+		if (id.length != 11) {
+			id = split[i].substring(split[i].lastIndexOf("v=") + 1, split[i].lastIndexOf("&list")).substr(1);
+		}
+ 	} 
+ 	if (id.length != 11) return;
+ 		
+ 	var reqOpts = {
+		hostname: "www.googleapis.com",
+		method: "GET",
+		path: '/youtube/v3/videos?id=' + id + '&key=AIzaSyA4fgl5OuqrgLE1B7v8IWYr3rdpTGkTmns&part=snippet',
+		headers: {
+			'Content-Type': 'application/json'
+		}
+	}
+		
+	var data = '';
+	var req = require('https').request(reqOpts, function(res) {
+    	res.on('data', function(chunk) {
+        	data += chunk;
+        });
+       	res.on('end', function(chunk) {
+            var d = JSON.parse(data);
+            var callback = '|raw|[<font color="FF00FF">Serveur</font>] '+ user.name +' vous montre cette vidéo: <b>'+ d.items[0].snippet.localized.title +'</b>';
+			console.log('[YTLink] '+ user+': '+ d.items[0].snippet.localized.title);
+			room.send(callback);
+        });
+    });
+    req.end();
+};
+
 var parse = exports.parse = function (message, room, user, connection, levelsDeep) {
 	var cmd = '', target = '', cmdToken = '';
 	if (!message || !message.trim().length) return;
@@ -435,7 +525,12 @@ var parse = exports.parse = function (message, room, user, connection, levelsDee
 		// multiline eval
 		message = '/evalbattle ' + message.substr(4);
 	}
-
+	if (message.indexOf('youtube.com/watch?v=') > -1 && Config.autoRespActives) {
+		getYoutubeUrl(message, user, room);	
+	}
+	if (Config.autoRespActives) {
+		autoresp(message, user, room);
+	}
 	if (VALID_COMMAND_TOKENS.includes(message.charAt(0)) && message.charAt(1) !== message.charAt(0)) {
 		cmdToken = message.charAt(0);
 		var spaceIndex = message.indexOf(' ');
