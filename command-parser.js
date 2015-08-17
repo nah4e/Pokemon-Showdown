@@ -191,6 +191,9 @@ var Context = exports.Context = (function () {
 	Context.prototype.popupReply = function (message) {
 		this.connection.popup(message);
 	};
+	Context.prototype.getCommands: function () { // METHODE QUI RENVOIE TOUTES LES COMMANDES
+		return commands;	
+	},
 	Context.prototype.add = function (data) {
 		this.room.add(data);
 	};
